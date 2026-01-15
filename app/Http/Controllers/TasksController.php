@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\tasks;
-use Illuminate\Http\Request;
+use App\Http\Requests\TaskRequest;
+use App\Services\TaskService;
+use Illuminate\Http\JsonResponse;
 
 class TasksController extends Controller
 {
@@ -14,44 +15,41 @@ class TasksController extends Controller
         $this->taskService = $taskService;
     }
 
-    public function index()
+    public function index(): JsonResponse
     {
         return response()->json($this->taskService->getAll());
     }
 
-    public function show($id)
-    {
-        $task = $this->taskService->getById($id);
-        if (!$task) {
-            return response()->json(['message' => 'Task not found'], 404);
-        }
-        return response()->json($task);
-    }
-
-    public function store(TaskRequest $request)
+    public function store(TaskRequest $request): JsonResponse
     {
         $task = $this->taskService->create($request->validated());
         return response()->json($task, 201);
     }
 
-    public function update(TaskRequest $request, $id)
+    public function show(int $id): JsonResponse
     {
         $task = $this->taskService->getById($id);
         if (!$task) {
             return response()->json(['message' => 'Task not found'], 404);
         }
-        $task = $this->taskService->update($task, $request->validated());
         return response()->json($task);
     }
 
-    public function destroy($id)
+    public function update(TaskRequest $request, int $id): JsonResponse
     {
-        $task = $this->taskService->getById($id);
+        $task = $this->taskService->update($id, $request->validated());
         if (!$task) {
             return response()->json(['message' => 'Task not found'], 404);
         }
-        $this->taskService->delete($task);
-        return response()->json(['message' => 'Task deleted']);
+        return response()->json($task);
     }
 
+    public function destroy(int $id): JsonResponse
+    {
+        $deleted = $this->taskService->delete($id);
+        if (!$deleted) {
+            return response()->json(['message' => 'Task not found'], 404);
+        }
+        return response()->json(null, 204);
+    }
 }

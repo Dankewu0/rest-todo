@@ -2,33 +2,43 @@
 
 namespace App\Services;
 
-use App\Models\tasks;
+use App\Models\Task;
 
 class TaskService
 {
-    public function create(array $data): tasks
+    public function create(array $data): Task
     {
-        return tasks::create($data);
+        return Task::create($data);
     }
 
     public function getAll()
     {
-        return tasks::all();
+        return Task::all();
     }
 
-    public function getById(int $id): ?tasks
+    public function getById(int $id): ?Task
     {
-        return tasks::find($id);
+        return Task::find($id);
     }
 
-    public function update(tasks $task, array $data): tasks
+    public function update(int $id, array $data): ?Task
     {
+        $task = Task::find($id);
+        if (!$task) {
+            return null;
+        }
+
         $task->update($data);
         return $task;
     }
 
-    public function delete(tasks $task): bool
+    public function delete(int $id): bool
     {
+        $task = Task::find($id);
+        if (!$task) {
+            return false;
+        }
+
         return $task->delete();
     }
 }
