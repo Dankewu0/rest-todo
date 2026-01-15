@@ -8,10 +8,14 @@ class TaskService
 {
     public function create(array $data): Task
     {
-        return Task::create($data);
+        return Task::create([
+            'title'       => $data['title'],
+            'description' => $data['description'] ?? null,
+            'status'      => $data['status'],
+        ]);
     }
 
-    public function getAll()
+    public function getAll(): \Illuminate\Database\Eloquent\Collection
     {
         return Task::all();
     }
@@ -28,7 +32,12 @@ class TaskService
             return null;
         }
 
-        $task->update($data);
+        $task->update([
+            'title'       => $data['title'] ?? $task->title,
+            'description' => $data['description'] ?? $task->description,
+            'status'      => $data['status'] ?? $task->status,
+        ]);
+
         return $task;
     }
 
