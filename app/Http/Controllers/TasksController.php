@@ -7,59 +7,51 @@ use Illuminate\Http\Request;
 
 class TasksController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected TaskService $taskService;
+
+    public function __construct(TaskService $taskService)
+    {
+        $this->taskService = $taskService;
+    }
+
     public function index()
     {
-        //
+        return response()->json($this->taskService->getAll());
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function show($id)
     {
-        //
+        $task = $this->taskService->getById($id);
+        if (!$task) {
+            return response()->json(['message' => 'Task not found'], 404);
+        }
+        return response()->json($task);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(TaskRequest $request)
     {
-        //
+        $task = $this->taskService->create($request->validated());
+        return response()->json($task, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(tasks $tasks)
+    public function update(TaskRequest $request, $id)
     {
-        //
+        $task = $this->taskService->getById($id);
+        if (!$task) {
+            return response()->json(['message' => 'Task not found'], 404);
+        }
+        $task = $this->taskService->update($task, $request->validated());
+        return response()->json($task);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(tasks $tasks)
+    public function destroy($id)
     {
-        //
+        $task = $this->taskService->getById($id);
+        if (!$task) {
+            return response()->json(['message' => 'Task not found'], 404);
+        }
+        $this->taskService->delete($task);
+        return response()->json(['message' => 'Task deleted']);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, tasks $tasks)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(tasks $tasks)
-    {
-        //
-    }
 }
