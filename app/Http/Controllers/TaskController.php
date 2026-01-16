@@ -7,7 +7,7 @@ use App\Models\Task;
 use App\Services\TaskService;
 use Illuminate\Http\JsonResponse;
 
-class TasksController extends Controller
+class TaskController extends Controller
 {
     public function __construct(private TaskService $service) {}
 

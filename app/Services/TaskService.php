@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Task;
+use App\Enums\TaskStatus;
 
 class TaskService
 {
@@ -11,7 +12,7 @@ class TaskService
         return Task::create([
             'title'       => $data['title'],
             'description' => $data['description'] ?? null,
-            'status'      => $data['status'],
+            'status'      => TaskStatus::from($data['status']),
         ]);
     }
 
@@ -32,11 +33,19 @@ class TaskService
             return null;
         }
 
-        $task->update([
-            'title'       => $data['title'] ?? $task->title,
-            'description' => $data['description'] ?? $task->description,
-            'status'      => $data['status'] ?? $task->status,
-        ]);
+        if (array_key_exists('title', $data)) {
+            $task->title = $data['title'];
+        }
+
+        if (array_key_exists('description', $data)) {
+            $task->description = $data['description'];
+        }
+
+        if (array_key_exists('status', $data)) {
+            $task->status = TaskStatus::from($data['status']);
+        }
+
+        $task->save();
 
         return $task;
     }
